@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container-fluid py-4">
+      <h1 class="text-center mb-4">
+        <i class="bi bi-box-seam"></i> Product Dashboard
+      </h1>
+
+      <!-- Controls -->
+      <div class="row mb-4 align-items-center">
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              id="searchInput"
+              placeholder="Tìm kiếm theo title..."
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <label class="input-group-text">Hiển thị</label>
+            <select class="form-select" id="pageSizeSelect">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+            <span class="input-group-text">/ trang</span>
+          </div>
+        </div>
+        <div class="col-md-5 text-end">
+          <button class="btn btn-success me-2" id="btnCreate">
+            <i class="bi bi-plus-circle"></i> Tạo mới
+          </button>
+          <button class="btn btn-primary" id="btnExport">
+            <i class="bi bi-download"></i> Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="text-center py-5">
+        <div class="spinner-border text-primary"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+
+      <!-- Table -->
+      <div id="tableWrapper" style="display: none">
+        <table class="table table-bordered table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th style="width: 70px">ID</th>
+              <th style="width: 30%">
+                TITLE
+                <i class="bi bi-arrow-down-up sort-btn" data-sort="title"></i>
+              </th>
+              <th style="width: 100px">
+                PRICE
+                <i class="bi bi-arrow-down-up sort-btn" data-sort="price"></i>
+              </th>
+              <th style="width: 120px">CATEGORY</th>
+              <th style="width: 100px">IMAGES</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav>
+          <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+        <p class="text-center text-muted" id="info"></p>
+      </div>
+    </div>
+
+    <!-- Detail/Edit Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+              <i class="bi bi-eye"></i> Chi tiết sản phẩm
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-5">
+                <div
+                  id="modalImages"
+                  class="carousel slide"
+                  data-bs-ride="carousel"
+                >
+                  <div class="carousel-inner" id="carouselInner"></div>
+                  <button
+                    class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#modalImages"
+                    data-bs-slide="prev"
+                  >
+                    <span class="carousel-control-prev-icon"></span>
+                  </button>
+                  <button
+                    class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#modalImages"
+                    data-bs-slide="next"
+                  >
+                    <span class="carousel-control-next-icon"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-7">
+                <input type="hidden" id="editId" />
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Title</label>
+                  <input type="text" class="form-control" id="editTitle" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Price ($)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="editPrice"
+                    min="0"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Description</label>
+                  <textarea
+                    class="form-control"
+                    id="editDescription"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Category</label>
+                  <select class="form-select" id="editCategory"></select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold"
+                    >Images (mỗi URL một dòng)</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="editImages"
+                    rows="2"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+            <button type="button" class="btn btn-warning" id="btnUpdate">
+              <i class="bi bi-pencil"></i> Cập nhật
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title">
+              <i class="bi bi-plus-circle"></i> Tạo sản phẩm mới
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Title *</label>
+              <input
+                type="text"
+                class="form-control"
+                id="createTitle"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Price ($) *</label>
+              <input
+                type="number"
+                class="form-control"
+                id="createPrice"
+                min="0"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Description *</label>
+              <textarea
+                class="form-control"
+                id="createDescription"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Category *</label>
+              <select class="form-select" id="createCategory" required></select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold"
+                >Images (mỗi URL một dòng) *</label
+              >
+              <textarea
+                class="form-control"
+                id="createImages"
+                rows="2"
+                placeholder="https://i.pinimg.com/736x/8f/67/4f/8f674f49d2eecd022377a366618d1d6b.jpg"
+                required
+              ></textarea>
+              <small class="text-muted"
+                >URL phải bắt đầu bằng http:// hoặc https://</small
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button type="button" class="btn btn-success" id="btnSave">
+              <i class="bi bi-check-circle"></i> Tạo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="toast" class="toast">
+        <div class="toast-header">
+          <strong class="me-auto" id="toastTitle">Thông báo</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+          ></button>
+        </div>
+        <div class="toast-body" id="toastBody"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

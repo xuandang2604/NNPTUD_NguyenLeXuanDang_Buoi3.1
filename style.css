@@ -1,0 +1,128 @@
+body {
+  background: #f5f5f5;
+}
+
+h1 {
+  color: #2c3e50;
+}
+
+/* Table */
+.table {
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table thead th {
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+  background: #e3f2fd !important;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Sort button */
+.sort-btn {
+  cursor: pointer;
+  margin-left: 5px;
+  opacity: 0.5;
+}
+
+.sort-btn:hover {
+  opacity: 1;
+}
+
+/* Product image */
+.product-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.product-img:hover {
+  transform: scale(2);
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Category badge */
+.badge-category {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+}
+
+/* No image placeholder */
+.no-img {
+  width: 50px;
+  height: 50px;
+  background: #eee;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-size: 0.6rem;
+  color: #999;
+}
+
+/* Tooltip for description */
+.row-tooltip {
+  position: relative;
+}
+
+.row-tooltip[data-desc]:hover::after {
+  content: attr(data-desc);
+  position: absolute;
+  left: 100px;
+  top: -5px;
+  background: #333;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  max-width: 300px;
+  z-index: 1000;
+  font-size: 0.85rem;
+  white-space: normal;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Pagination */
+.pagination .page-link {
+  margin: 0 2px;
+  border-radius: 5px;
+}
+
+/* Carousel */
+.carousel {
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.carousel-inner img {
+  height: 280px;
+  object-fit: contain;
+}
+
+/* Toast colors */
+.toast.success {
+  background: #d4edda;
+}
+
+.toast.error {
+  background: #f8d7da;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 8px;
+}
